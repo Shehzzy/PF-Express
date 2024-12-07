@@ -1,5 +1,5 @@
 const axios = require("axios");
-const ProjectModel = require("../models/ProjectModel.js");
+const ProjectModel = require("../Models/ProjectModel.js");
 const path = require("path");
 const fs = require("fs");
 const FormData = require("form-data"); // Import FormData
