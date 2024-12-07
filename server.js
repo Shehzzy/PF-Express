@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 const cors = require('cors');
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'https://trackfolio-e3prnfk4a-shehzonias-projects.vercel.app/',
   methods: ['GET', 'POST', 'PUT'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
