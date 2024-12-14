@@ -47,16 +47,11 @@ const uploadImageToImgBB = async (imagePath) => {
 // Create project API
 const CreateProject = async (req, res) => {
   try {
-    console.log("Uploaded Files:", req.files); // Check the files being uploaded
+    // Get the Cloudinary URLs for the cover and screenshot images from the request
+    let coverUrl = req.files && req.files.cover ? req.files.cover[0].url : null;
+    let screenshotUrl = req.files && req.files.screenshot ? req.files.screenshot[0].url : null;
 
-    let coverUrl = req.files && req.files.cover ? req.files.cover[0].secure_url : null;
-    let screenshotUrl = req.files && req.files.screenshot ? req.files.screenshot[0].secure_url : null;
-
-    console.log("Cover URL:", coverUrl); // Log the URLs
-    console.log("Screenshot URL:", screenshotUrl);
-    console.log("Secure urls", req.files.cover[0].secure_url);
-
-
+    // Create the project with the Cloudinary URLs
     const newProject = await ProjectModel.create({
       ...req.body,
       cover: coverUrl,
@@ -68,11 +63,12 @@ const CreateProject = async (req, res) => {
       projectData: newProject,
     });
   } catch (error) {
-    console.error("Error:", error);
-    return res.status(500).json({ message: "Server error", error: error.message });
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 };
-
 
 
 // Get all projects API
@@ -99,11 +95,11 @@ const updateSpecificProject = async (req, res) => {
 
     // If new cover or screenshot images are uploaded, get their URLs from the Cloudinary response
     if (req.files && req.files.cover) {
-      coverUrl = req.files.cover[0].secure_url;
+      coverUrl = req.files.cover[0].url;
     }
 
     if (req.files && req.files.screenshot) {
-      screenshotUrl = req.files.screenshot[0].secure_url;
+      screenshotUrl = req.files.screenshot[0].url;
     }
 
     // Update the project with the new URLs (or keep existing if not updated)
