@@ -5,7 +5,7 @@ var authenticateJWT = require('../Middlewares/authenticateMiddleware');
 var authorizeRole = require('../Middlewares/authorizationMiddleware');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
-const multerStorageCloudinary = require('multer-storage-cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary'); // Correct import
 const dotenv = require('dotenv');
 
 // Load environment variables
@@ -19,13 +19,15 @@ cloudinary.config({
 });
 
 // Set up multer storage with Cloudinary
-const storage = multerStorageCloudinary({
+const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    folder: 'uploads', // Optional: Folder name in Cloudinary
-    allowedFormats: ['jpg', 'png', 'jpeg', 'gif'], // Allowed file formats
-    transformation: [
-        { width: 800, height: 800, crop: 'limit' } // Optional: Resize images before upload
-    ]
+    params: {
+        folder: 'uploads', // Optional: Folder name in Cloudinary
+        allowed_formats: ['jpg', 'png', 'jpeg', 'gif'], // Allowed file formats
+        transformation: [
+            { width: 800, height: 800, crop: 'limit' } // Optional: Resize images before upload
+        ]
+    }
 });
 
 // Initialize multer with Cloudinary storage
