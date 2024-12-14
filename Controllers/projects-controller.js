@@ -47,16 +47,11 @@ const uploadImageToImgBB = async (imagePath) => {
 // Create project API
 const CreateProject = async (req, res) => {
   try {
-    // Validate if the files are provided and handle accordingly
-    let coverUrl =
-      req.files && req.files.cover
-        ? await uploadImageToImgBB(req.files.cover[0].path)
-        : null;
-    let screenshotUrl =
-      req.files && req.files.screenshot
-        ? await uploadImageToImgBB(req.files.screenshot[0].path)
-        : null;
+    // Get the Cloudinary URLs for the cover and screenshot images from the request
+    let coverUrl = req.files && req.files.cover ? req.files.cover[0].secure_url : null;
+    let screenshotUrl = req.files && req.files.screenshot ? req.files.screenshot[0].secure_url : null;
 
+    // Create the project with the Cloudinary URLs
     const newProject = await ProjectModel.create({
       ...req.body,
       cover: coverUrl,
@@ -74,6 +69,7 @@ const CreateProject = async (req, res) => {
       .json({ message: "Server error", error: error.message });
   }
 };
+
 
 // Get all projects API
 const GetAllProjects = async (req, res) => {
@@ -94,35 +90,35 @@ const GetAllProjects = async (req, res) => {
 // Update specific project API
 const updateSpecificProject = async (req, res) => {
   try {
-    console.log('Request body:', req.body);
-    console.log('Uploaded files:', req.files);
+    let coverUrl = req.body.cover;  // Keep existing cover URL unless updated
+    let screenshotUrl = req.body.screenshot;  // Keep existing screenshot URL unless updated
 
-    let coverUrl =
-      req.files && req.files.cover
-        ? await uploadImageToImgBB(req.files.cover[0].path)  
-        : req.body.cover; 
+    // If new cover or screenshot images are uploaded, get their URLs from the Cloudinary response
+    if (req.files && req.files.cover) {
+      coverUrl = req.files.cover[0].secure_url;
+    }
 
-    let screenshotUrl =
-      req.files && req.files.screenshot
-        ? await uploadImageToImgBB(req.files.screenshot[0].path)  
-        : req.body.screenshot;
+    if (req.files && req.files.screenshot) {
+      screenshotUrl = req.files.screenshot[0].secure_url;
+    }
+
+    // Update the project with the new URLs (or keep existing if not updated)
     const updatedProject = await ProjectModel.findByIdAndUpdate(
       req.params.id,
-      { ...req.body, cover: coverUrl, screenshot: screenshotUrl }, // Update project with new data
-      { new: true }  // Return the updated document
+      { ...req.body, cover: coverUrl, screenshot: screenshotUrl },
+      { new: true }
     );
 
-    // Return the updated project as a response
     return res.json({
       message: "Project updated successfully",
       projectData: updatedProject,
     });
   } catch (error) {
-    // Log and return any errors
     console.error('Error updating project:', error);
     return res.status(500).json({ message: "Update failed", error });
   }
 };
+
 
 
 // Activate Projects API
