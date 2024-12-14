@@ -9,10 +9,12 @@ app.use(bodyParser.json());
 app.use(express.json());
 const cors = require('cors');
 app.use(cors({
-    origin: 'https://trackfolio-194c2.web.app',
-    methods: ['GET', 'POST', 'PUT'], // Adjust methods as needed
-    allowedHeaders: ['Content-Type', 'Authorization']
+  origin: 'https://trackfolio-194c2.web.app/',  // Allow this origin
+  methods: ['GET', 'POST', 'PUT', 'OPTIONS'],  // Allow preflight OPTIONS request
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true  // If your requests include cookies or authentication headers
 }));
+
 
 
 
