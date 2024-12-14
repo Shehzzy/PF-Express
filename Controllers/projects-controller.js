@@ -47,11 +47,16 @@ const uploadImageToImgBB = async (imagePath) => {
 // Create project API
 const CreateProject = async (req, res) => {
   try {
-    // Get the Cloudinary URLs for the cover and screenshot images from the request
+    console.log("Uploaded Files:", req.files); // Check the files being uploaded
+
     let coverUrl = req.files && req.files.cover ? req.files.cover[0].secure_url : null;
     let screenshotUrl = req.files && req.files.screenshot ? req.files.screenshot[0].secure_url : null;
 
-    // Create the project with the Cloudinary URLs
+    console.log("Cover URL:", coverUrl); // Log the URLs
+    console.log("Screenshot URL:", screenshotUrl);
+    console.log("Secure urls", req.files.cover[0].secure_url);
+
+
     const newProject = await ProjectModel.create({
       ...req.body,
       cover: coverUrl,
@@ -63,12 +68,11 @@ const CreateProject = async (req, res) => {
       projectData: newProject,
     });
   } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    console.error("Error:", error);
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 
 // Get all projects API
