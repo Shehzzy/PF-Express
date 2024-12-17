@@ -75,20 +75,23 @@ const uploadImageToImgBB = async (imagePath) => {
 
 const CreateProject = async (req, res) => {
   try {
-    // Extract the public_id from uploaded files
-    let coverPublicId = req.files && req.files.cover ? req.files.cover[0].public_id : null;
-    let screenshotPublicId = req.files && req.files.screenshot ? req.files.screenshot[0].public_id : null;
+    console.log("Request Files:", req.files); // Debugging req.files
 
-    // Generate the Cloudinary URLs dynamically using cloudinary.url()
-    let coverUrl = coverPublicId
-      ? cloudinary.url(coverPublicId, { width: 800, height: 600, crop: "fill" }) // Example transformation
-      : null;
+    // Extract Cloudinary URLs from req.files
+    let coverUrl =
+      req.files && req.files.cover
+        ? req.files.cover[0].path // Cloudinary returns the URL in 'path'
+        : null;
 
-    let screenshotUrl = screenshotPublicId
-      ? cloudinary.url(screenshotPublicId, { width: 400, height: 300, crop: "fill" }) // Example transformation
-      : null;
+    let screenshotUrl =
+      req.files && req.files.screenshot
+        ? req.files.screenshot[0].path
+        : null;
 
-    // Create the project with the Cloudinary URLs
+    console.log("Cover URL:", coverUrl);
+    console.log("Screenshot URL:", screenshotUrl);
+
+    // Create a new project
     const newProject = await ProjectModel.create({
       ...req.body,
       cover: coverUrl,
@@ -100,7 +103,7 @@ const CreateProject = async (req, res) => {
       projectData: newProject,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error:", error);
     return res
       .status(500)
       .json({ message: "Server error", error: error.message });
