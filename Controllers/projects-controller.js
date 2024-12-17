@@ -3,6 +3,8 @@ const ProjectModel = require("../Models/ProjectModel.js");
 const path = require("path");
 const fs = require("fs");
 const FormData = require("form-data"); // Import FormData
+const cloudinary = require("cloudinary").v2; // Ensure Cloudinary is properly configured
+
 
 // Global variables
 const activeStatus = "Active";
@@ -45,11 +47,46 @@ const uploadImageToImgBB = async (imagePath) => {
 };
 
 // Create project API
+// const CreateProject = async (req, res) => {
+//   try {
+//     // Get the Cloudinary URLs for the cover and screenshot images from the request
+//     let coverUrl = req.files && req.files.cover ? req.files.cover[0].url : null;
+//     let screenshotUrl = req.files && req.files.screenshot ? req.files.screenshot[0].url : null;
+
+//     // Create the project with the Cloudinary URLs
+//     const newProject = await ProjectModel.create({
+//       ...req.body,
+//       cover: coverUrl,
+//       screenshot: screenshotUrl,
+//     });
+
+//     return res.json({
+//       message: "Project created successfully",
+//       projectData: newProject,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return res
+//       .status(500)
+//       .json({ message: "Server error", error: error.message });
+//   }
+// };
+
+
 const CreateProject = async (req, res) => {
   try {
-    // Get the Cloudinary URLs for the cover and screenshot images from the request
-    let coverUrl = req.files && req.files.cover ? req.files.cover[0].url : null;
-    let screenshotUrl = req.files && req.files.screenshot ? req.files.screenshot[0].url : null;
+    // Extract the public_id from uploaded files
+    let coverPublicId = req.files && req.files.cover ? req.files.cover[0].public_id : null;
+    let screenshotPublicId = req.files && req.files.screenshot ? req.files.screenshot[0].public_id : null;
+
+    // Generate the Cloudinary URLs dynamically using cloudinary.url()
+    let coverUrl = coverPublicId
+      ? cloudinary.url(coverPublicId, { width: 800, height: 600, crop: "fill" }) // Example transformation
+      : null;
+
+    let screenshotUrl = screenshotPublicId
+      ? cloudinary.url(screenshotPublicId, { width: 400, height: 300, crop: "fill" }) // Example transformation
+      : null;
 
     // Create the project with the Cloudinary URLs
     const newProject = await ProjectModel.create({
@@ -69,6 +106,7 @@ const CreateProject = async (req, res) => {
       .json({ message: "Server error", error: error.message });
   }
 };
+
 
 
 // Get all projects API
