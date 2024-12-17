@@ -72,6 +72,7 @@ const uploadImageToImgBB = async (imagePath) => {
 //   }
 // };
 
+// Create Project API
 
 const CreateProject = async (req, res) => {
   try {
@@ -129,36 +130,79 @@ const GetAllProjects = async (req, res) => {
 };
 
 // Update specific project API
+// const updateSpecificProject = async (req, res) => {
+//   try {
+//     let coverUrl = req.body.cover;  // Keep existing cover URL unless updated
+//     let screenshotUrl = req.body.screenshot;  // Keep existing screenshot URL unless updated
+
+//     // If new cover or screenshot images are uploaded, get their URLs from the Cloudinary response
+//     if (req.files && req.files.cover) {
+//       coverUrl = req.files.cover[0].url;
+//     }
+
+//     if (req.files && req.files.screenshot) {
+//       screenshotUrl = req.files.screenshot[0].url;
+//     }
+
+//     // Update the project with the new URLs (or keep existing if not updated)
+//     const updatedProject = await ProjectModel.findByIdAndUpdate(
+//       req.params.id,
+//       { ...req.body, cover: coverUrl, screenshot: screenshotUrl },
+//       { new: true }
+//     );
+
+//     return res.json({
+//       message: "Project updated successfully",
+//       projectData: updatedProject,
+//     });
+//   } catch (error) {
+//     console.error('Error updating project:', error);
+//     return res.status(500).json({ message: "Update failed", error });
+//   }
+// };
 const updateSpecificProject = async (req, res) => {
   try {
-    let coverUrl = req.body.cover;  // Keep existing cover URL unless updated
-    let screenshotUrl = req.body.screenshot;  // Keep existing screenshot URL unless updated
+    console.log("Request Files:", req.files); // Debugging req.files
 
-    // If new cover or screenshot images are uploaded, get their URLs from the Cloudinary response
+    // Default to existing URLs unless new files are uploaded
+    let coverUrl = req.body.cover; // Existing cover URL from request body
+    let screenshotUrl = req.body.screenshot; // Existing screenshot URL from request body
+
+    // If new cover image is uploaded, update the URL from Cloudinary response
     if (req.files && req.files.cover) {
-      coverUrl = req.files.cover[0].url;
+      coverUrl = req.files.cover[0].path; // Cloudinary URL from 'path'
+      console.log("New Cover URL:", coverUrl);
     }
 
+    // If new screenshot image is uploaded, update the URL from Cloudinary response
     if (req.files && req.files.screenshot) {
-      screenshotUrl = req.files.screenshot[0].url;
+      screenshotUrl = req.files.screenshot[0].path; // Cloudinary URL from 'path'
+      console.log("New Screenshot URL:", screenshotUrl);
     }
 
-    // Update the project with the new URLs (or keep existing if not updated)
+    // Update the project with new or existing data
     const updatedProject = await ProjectModel.findByIdAndUpdate(
       req.params.id,
       { ...req.body, cover: coverUrl, screenshot: screenshotUrl },
-      { new: true }
+      { new: true } // Return the updated document
     );
+
+    if (!updatedProject) {
+      return res.status(404).json({ message: "Project not found" });
+    }
 
     return res.json({
       message: "Project updated successfully",
       projectData: updatedProject,
     });
   } catch (error) {
-    console.error('Error updating project:', error);
-    return res.status(500).json({ message: "Update failed", error });
+    console.error("Error updating project:", error);
+    return res
+      .status(500)
+      .json({ message: "Update failed", error: error.message });
   }
 };
+
 
 
 
