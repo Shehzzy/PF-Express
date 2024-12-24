@@ -24,7 +24,7 @@ const register = async (req, res) => {
         role: userCreate.role,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "2y" }
     );
 
     return res
