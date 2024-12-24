@@ -9,12 +9,14 @@ app.use(bodyParser.json());
 app.use(express.json());
 const cors = require('cors');
 app.use(cors({
-  origin: 'https://trackfolio-194c2.web.app',  
+  origin: true,  // Allow all origins
   methods: ['GET', 'POST', 'PUT', 'OPTIONS'],  
   allowedHeaders: ['Content-Type', 'Authorization'],  
   credentials: true  
 }));
-app.options('*', cors());
+
+app.options('*', cors());  // Enable CORS for all pre-flight OPTIONS requests
+
 
 
 
